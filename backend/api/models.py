@@ -1,5 +1,5 @@
 from tastypie.resources import ModelResource
-from .models import Post
+from blog.models import Post
 from tastypie.authorization import Authorization
 
 
