@@ -4,7 +4,9 @@ from blog.models import Post
 from tastypie.authorization import Authorization
 from .authentication import CustomAuthentication
 from tastypie.http import HttpNoContent
-from django.core import serializers
+from tastypie.bundle import Bundle
+from tastypie.exceptions import NotFound
+# from django.core import serializers
 
 
 class PostResource(ModelResource):
@@ -14,32 +16,65 @@ class PostResource(ModelResource):
         allowed_methods = ['get', 'post', 'delete', 'put',]
         authentication = CustomAuthentication()
         authorization = Authorization()
+        always_return_data = True
 
-    # def dehydrate_title(self, bundle):
-    #     bundle.data['title'] = bundle.data['title'].upper()
-    # def dehydrate_title(self, bundle):
-    #     bundle.data['title'] = bundle.data['title'].upper()
+    def hydrate(self, bundle):
+        bundle.obj.author = bundle.request.user
+        return bundle
 
-    # def obj_delete(self, bundle, **kwargs):
-    #     super(PostResource, self).obj_delete(bundle, **kwargs)
+    def dehydrate(self, bundle):
+        bundle.data['author'] = bundle.obj.author
+        bundle.data['author_id'] = bundle.obj.author_id
+        return bundle
+
+    def dehydrate_title(self, bundle):
+        return bundle.data['title'].upper()
 
     def delete_detail(self, request, **kwargs):
-        # super(PostResource, self).delete_detail(request, **kwargs)
-        # posts_serialized = serializers.serialize('json', Post.objects.all())
-        # posts = json.loads(posts_serialized)
-        # return self.create_response(request, posts, response_class=HttpNoContent)
-        super(PostResource, self).delete_detail(request, **kwargs)
-        posts = Post.objects.all()
-        bundles = [self.full_dehydrate(
-            self.build_bundle(obj=post)) for post in posts]
-        object_list = {
-            'meta': {
-                'limit': len(posts),
-                'next': None,
-                'offset': 0,
-                'previous': None,
-                'total_count': len(posts)
-            },
-            'objects': [bundle.data for bundle in bundles]
-        }
-        return self.create_response(request, object_list, response_class=HttpNoContent)
+        try:
+            obj_to_delete = self.obj_get(bundle=Bundle(
+                request=request), **self.remove_api_resource_names(kwargs))
+            obj_id = obj_to_delete.id
+            super(PostResource, self).delete_detail(request, **kwargs)
+            return self.create_response(request, {'id': obj_id}, response_class=HttpNoContent)
+        except NotFound:
+            raise
+        except Exception as e:
+            raise
+
+    # full data after delete
+    # def delete_detail(self, request, **kwargs):
+    #     super(PostResource, self).delete_detail(request, **kwargs)
+    #     posts = Post.objects.all()
+    #     bundles = [self.full_dehydrate(
+    #         self.build_bundle(obj=post)) for post in posts]
+    #     object_list = {
+    #         'meta': {
+    #             'limit': len(posts),
+    #             'next': None,
+    #             'offset': 0,
+    #             'previous': None,
+    #             'total_count': len(posts)
+    #         },
+    #         'objects': [bundle.data for bundle in bundles]
+    #     }
+    #     return self.create_response(request, object_list, response_class=HttpNoContent)
+
+    # full data after post
+    # def post_list(self, request, **kwargs):
+    #     super(PostResource, self).post_list(request, **kwargs)
+    #     posts = Post.objects.all()
+    #     bundles = [self.full_dehydrate(
+    #         self.build_bundle(obj=post)) for post in posts]
+
+    #     object_list = {
+    #         'meta': {
+    #             'limit': len(posts),
+    #             'next': None,
+    #             'offset': 0,
+    #             'previous': None,
+    #             'total_count': len(posts)
+    #         },
+    #         'objects': [bundle.data for bundle in bundles]
+    #     }
+    #     return self.create_response(request, object_list, response_class=HttpCreated)
