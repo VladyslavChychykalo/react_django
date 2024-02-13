@@ -1,35 +1,43 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { date_formatter } from "./helpers/date-formatter";
+import useFetch from "./hooks/useFetch";
+
+type PostType = {
+  id: number;
+  title: string;
+  author: string;
+  text: string;
+  created_date: string;
+  published_date: string;
+};
 
 function App() {
-  const [count, setCount] = useState(0)
+  const { apiData } = useFetch("posts/", "get");
 
+  console.log(apiData);
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div>
+      <h1>Blog</h1>
+      <ul>
+        {apiData?.objects?.map((post: PostType) => (
+          <li key={post.id}>
+            <h3>{post.title}</h3>
+            <p>{post.text}</p>
+            <p>Author: {post.author}</p>
+            <p>
+              {"Created: " +
+                (post.created_date ? date_formatter(post.created_date) : "n/a")}
+            </p>
+            <p>
+              {"Published: " +
+                (post.published_date
+                  ? date_formatter(post.published_date)
+                  : "n/a")}
+            </p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 }
 
-export default App
+export default App;
