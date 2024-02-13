@@ -21,17 +21,23 @@ function App() {
         {apiData?.objects?.map((post: PostType) => (
           <li key={post.id}>
             <h3>{post.title}</h3>
-            <p>{post.text}</p>
-            <p>Author: {post.author}</p>
             <p>
-              {"Created: " +
-                (post.created_date ? date_formatter(post.created_date) : "n/a")}
+              <strong>Text: </strong>
+              {post.text}
+            </p>
+            <p style={{ textTransform: "capitalize" }}>
+              <strong>Author: </strong>
+              {post.author}
             </p>
             <p>
-              {"Published: " +
-                (post.published_date
-                  ? date_formatter(post.published_date)
-                  : "n/a")}
+              <strong>Created: </strong>
+              {post.created_date ? date_formatter(post.created_date) : "n/a"}
+            </p>
+            <p>
+              <strong>Published: </strong>
+              {post.published_date
+                ? date_formatter(post.published_date)
+                : "n/a"}
             </p>
           </li>
         ))}

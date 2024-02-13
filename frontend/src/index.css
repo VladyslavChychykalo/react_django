@@ -15,7 +15,6 @@
 
 body {
   margin: 0;
-  display: flex;
   min-width: 320px;
   min-height: 100vh;
 }
@@ -42,4 +41,19 @@ button:hover {
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
+}
+
+ul {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  /* width: 100%; */
+  padding: 40px;
+}
+
+li {
+  list-style: none;
+  border: 1px solid orange;
+  padding: 0 20px;
+  /* width: 100%; */
 }
