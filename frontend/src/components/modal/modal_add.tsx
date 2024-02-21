@@ -32,6 +32,7 @@ export const ModalAntdAddBlog: React.FC<ModalAntdAddBlogProps> = ({
             console.error("Error fetching posts:", error);
           }
         })();
+        form.resetFields();
         setIsModalOpen(false);
       })
       .catch((info) => {

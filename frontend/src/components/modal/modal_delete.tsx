@@ -22,9 +22,11 @@ export const ModalAntdDeleteBlog: React.FC<ModalAntdAddBlogProps> = ({
     (async () => {
       try {
         const response = await axios_api_instance.delete(`posts/${post_id}/`);
-        console.log("response:", response.data);
+        console.log("response:", response);
         setData((prev: PostType[] | null) =>
-          prev ? prev.filter((post) => post.id !== post_id) : [response.data]
+          prev
+            ? prev.filter((post) => post.id !== response.data.id)
+            : [response.data]
         );
       } catch (error) {
         console.error("Error fetching posts:", error);

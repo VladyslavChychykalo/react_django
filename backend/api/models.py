@@ -3,7 +3,7 @@ from tastypie.resources import ModelResource
 from blog.models import Post
 from tastypie.authorization import Authorization
 from .authentication import CustomAuthentication
-from tastypie.http import HttpNoContent
+from tastypie.http import HttpNoContent, HttpResponse
 from tastypie.bundle import Bundle
 from tastypie.exceptions import NotFound
 # from django.core import serializers
@@ -36,7 +36,7 @@ class PostResource(ModelResource):
                 request=request), **self.remove_api_resource_names(kwargs))
             obj_id = obj_to_delete.id
             super(PostResource, self).delete_detail(request, **kwargs)
-            return self.create_response(request, {'id': obj_id}, response_class=HttpNoContent)
+            return self.create_response(request, {'id': obj_id}, response_class=HttpResponse)
         except NotFound:
             raise
         except Exception as e:
